@@ -1,0 +1,2 @@
+#define MESHDICOM_API __declspec(dllexport)
+#define MESHDICOM_API __declspec(dllimport)

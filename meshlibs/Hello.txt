@@ -1,0 +1,12 @@
+﻿2024-10-23 22:43:03.117 DEBUG [18820] [log_init@24] Hello log!
+2024-10-23 22:43:03.120 DEBUG [18820] [log_init@25] Hello log!
+2024-10-23 22:43:03.120 DEBUG [18820] [log_init@26] Hello log!
+2024-10-23 22:43:03.120 DEBUG [18820] [log_init@29] Hello log!
+2024-10-23 22:43:03.120 DEBUG [18820] [log_init@30] Hello log!
+2024-10-23 22:43:03.120 DEBUG [18820] [log_init@31] Hello log!
+2024-10-23 22:43:15.952 DEBUG [15204] [log_init@24] Hello log!
+2024-10-23 22:43:16.123 DEBUG [15204] [log_init@25] Hello log!
+2024-10-23 22:43:16.458 DEBUG [15204] [log_init@26] Hello log!
+2024-10-23 22:43:16.680 DEBUG [15204] [log_init@29] Hello log!
+2024-10-23 22:43:17.140 DEBUG [15204] [log_init@30] Hello log!
+2024-10-23 22:43:17.362 DEBUG [15204] [log_init@31] Hello log!

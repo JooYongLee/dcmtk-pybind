@@ -1,0 +1,15 @@
+prefix=${pcfiledir}/../..
+exec_prefix="${prefix}"
+libdir="${prefix}/lib"
+includedir="${prefix}/../include/"
+
+Name: DCMTK
+Description: DICOM Toolkit (DCMTK)
+URL: https://dcmtk.org
+Version: 3.6.8
+Requires: dcmtk-deps
+Requires.private: 
+Cflags: -I"${includedir}"
+Libs: "-L${libdir}" -li2d -ldcmjpeg -ldcmjpls -lcmr -ldcmwlm -ldcmpstat -ldcmrt -ldcmseg -ldcmtract -ldcmpmap -ldcmect -ldcmfg -ldcmiod -ldcmdsig -ldcmtls -ldcmqrdb -ldcmsr -ldcmnet -ldcmtkcharls -lijg8 -lijg12 -lijg16 -ldcmimage -ldcmimgle -ldcmxml -ldcmdata -loflog -lofstd -loficonv
+Libs.private: -L"${libdir}" 
+

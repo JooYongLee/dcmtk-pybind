@@ -1,0 +1,8 @@
+Package: dcmtk
+Version: 3.6.8
+Port-Version: 9
+Depends: vcpkg-cmake, vcpkg-cmake-config, vcpkg-cmake-get-vars
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 5ceee47ae8582c9ee64882cac1648309bfef75e589234390388b9c3094e60d6b
+Description: This DICOM ToolKit (DCMTK) package consists of source code, documentation and installation instructions for a set of software libraries and applications implementing part of the DICOM/MEDICOM Standard.

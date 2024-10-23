@@ -1,0 +1,15 @@
+prefix=${pcfiledir}/../..
+exec_prefix="${prefix}"
+libdir="${prefix}/lib"
+includedir="${prefix}/../include/"
+
+Name: DCMTK
+Description: DICOM Toolkit (DCMTK)
+URL: https://dcmtk.org
+Version: 3.6.8
+Requires: 
+Requires.private: 
+Cflags: -I"${includedir}"
+Libs: "-L${libdir}"
+Libs.private: "-L${libdir}" -liphlpapi -lws2_32 -lnetapi32 -lwsock32
+
