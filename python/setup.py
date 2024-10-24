@@ -8,109 +8,120 @@ import shutil
 
 __version__ = '0.0.1'
 
+def deep_search_files(search_path, extesions):
+
+    # collect binding sources
+    searched_files = []
+
+    for root, dirs, files in os.walk(search_path):
+
+        for file in files:
+            if file.lower().endswith(tuple(ext_src_filters)):
+                relapath = os.path.relpath(root, file_path)
+                searched_files.append(os.path.join(relapath, file))
+    return searched_files
+
+
+def path_to_fname(x):
+    return os.path.splitext(os.path.basename(x))[0]
+
+
+def filtering(targets, filters):
+    outs = []
+    for name in targets:
+        for _check in filters:
+            if name.find(_check) >= 0:
+                outs.append(name)
+    return outs
+
+
+def collect_files(path_list, ext, only_fname=False):
+        # library_dirs.extend(lib_path)
+    path_list = [path_list] if isinstance(path_list, str) else path_list
+    all_found = []
+    for path in path_list:
+        found = glob.glob(os.path.join(path, ext))
+        all_found.extend(found)
+    if only_fname:
+        all_found = [path_to_fname(p) for p in all_found]
+    return all_found
+
+
 file_path = os.path.dirname(os.path.realpath(__file__))
-upper_file_path = os.path.dirname(file_path)
-solution_path = upper_file_path
-external_lib_path = os.path.join(file_path, 'libs')
-build_lib_path = os.path.join(file_path, '../x64/Release', )
-ext_meshlibs = [
-    "meshDicom",
-]
+solution_path = os.path.join(file_path, '../')
+internal_lib_path = os.path.join(file_path, '../x64/Release')
+external_lib_path = os.path.join(solution_path, 'libs')
 
+extenion_source_path = os.path.join(file_path, 'src')
+ext_src_filters = ['cpp', 'cxx']
 
-include_path_list = [
-    os.path.join(solution_path, "meshDicom/include"),  # meshlibs
-]
+public_dependency_libs = {
+    'meshDicom': {
+        'include': [
+            os.path.join(solution_path, "meshDicom/include")
+        ],  # meshlibs
+        'lib': [
+            internal_lib_path
+            ],
+        'dll': [
+            internal_lib_path
+        ]
+    }
 
-for p in include_path_list:
-    print(p)
+}
 
-path_to_fname = lambda x: os.path.splitext(os.path.basename(x))[0]
-dcmtk_library_path = os.path.join(external_lib_path, "dcmtk_x64-windows/lib")
-dcmtk_libs = glob.glob(dcmtk_library_path + "/*.lib")
-dcmtk_libs = [path_to_fname(path) for path in dcmtk_libs]
-check = [os.path.exists(p) for p in include_path_list]
-check_status = {os.path.exists(p): p for p in include_path_list}
-assert all(check), "conatin invalid folder:\n{}".format(check_status)
+private_dependency_libs = {
+    'dcmtk': (
+        os.path.join(external_lib_path, 'dcmtk_x64-windows/lib'),
+        os.path.join(external_lib_path, 'dcmtk_x64-windows/bin')
+    )
+}
 
-# collect binding sources
-extension_sources = []
-
-for root, dirs, files in os.walk(os.path.join(file_path, 'src')):
-    ext_filters = ['cpp', 'cxx']
-
-    for file in files:
-        if file.lower().endswith(tuple(ext_filters)):
-            relapath = os.path.relpath(root, file_path)
-            extension_sources.append(os.path.join(relapath, file))
+# 
+extension_sources = deep_search_files(extenion_source_path, ext_src_filters)
 print("all cpp files:\n{}".format(extension_sources))
 
 
-all_meshlibs_libs = glob.glob(os.path.join(build_lib_path, "*.lib"))
-all_meshlibs_libs = [path_to_fname(path) for path in all_meshlibs_libs]
-all_meshlibs_dlls = glob.glob(os.path.join(build_lib_path, "*.dll"))
+for k in public_dependency_libs.keys():
+    print('extension modules:', k)
+
+# dcmtk_library_path = os.path.join(external_lib_path, "dcmtk_x64-windows/lib")
+# dcmtk_libs = glob.glob(dcmtk_library_path + "/*.lib")
+# dcmtk_libs = [path_to_fname(path) for path in dcmtk_libs]
 
 
-def filtering(targets, filters):
-    outs = []
-    for name in targets:
-        for _check in filters:
-            if name.find(_check) >= 0:
-                outs.append(name)
-    return outs
-
-meshlibs_libs = filtering(all_meshlibs_libs, ext_meshlibs)
-meshlibs_dlls = filtering(all_meshlibs_dlls, ext_meshlibs)
-
-dcmtk_library_path = os.path.join(external_lib_path, "dcmtk/lib/vs2015/x64/release")
-
-# needed_vtk_lib = False
-
-all_libs = [
-    *meshlibs_libs,
-    # *dcmtk_libs,
-]
-
-library_dirs = [
-    # os.path.join(meshlibs_path, "lib"),
-    # vtk_library_path,
-    # dcmtk_library_path,
-    build_lib_path,
-    # os.path.join(external_lib_path, 'jsoncpp/lib/x64/Release'), # json
-]
-
-to_copy_dlls = [
-    *meshlibs_dlls,
-    # *vtk_dlls
-]
-print('all libs', all_libs)
-# ext_dep_meshlibs = [os.path.splitext(os.path.basename(f))[0] for f in meshlibs_libs]
-# all_meshlibs_dep_libs = [
-#     "meshDicom",
-#     "meshMiscellUtils",
-#     "meshCoreBase"
-#     *dcmtk_libs,
-#     # *others_libs
-# ]
-# meshlibs_libs = glob.glob(os.path.join(meshlibs_path, "lib/*.lib"))
-# all_meshlibs_dep_libs = [path_to_fname(path) for path in meshlibs_libs]
-#
-# ext_dep_meshlibs = [
-#     *all_meshlibs_dep_libs
-# ]
-
-#
-# meshlibs_libs = filtering(all_meshlibs_libs, ext_dep_meshlibs)
-# meshlibs_dlls = filtering(all_meshlibs_dlls, ext_dep_meshlibs)
+include_path_list = []
 
 
-def filtering(targets, filters):
-    outs = []
-    for name in targets:
-        for _check in filters:
-            if name.find(_check) >= 0:
-                outs.append(name)
-    return outs
+all_libs = []
+
+all_dlls = []
+
+library_dirs = []
+
+    
+
+
+for key, val in public_dependency_libs.items():
+    include_path_list.extend(val.get('include', []))
+    
+    lib_path = val.get('lib', [])
+    all_libs.extend(collect_files(lib_path, '*.lib', only_fname=True))
+    library_dirs.extend(lib_path)
+
+    dll_path = val.get('dll', [])
+    all_dlls.extend(collect_files(lib_path, '*.dll', only_fname=False))
+    
+
+for key, val in private_dependency_libs.items():
+    lib_path, dll_path = val
+    all_dlls.extend(collect_files(dll_path, '*.dll', only_fname=False))
+
+print('all dlls', all_dlls)
+check = [os.path.exists(p) for p in include_path_list]
+check_status = {os.path.exists(p): p for p in include_path_list}
+print(include_path_list)
+assert all(check), "conatin invalid folder:\n{}".format(check_status)
 
 
 class get_pybind_include(object):
@@ -130,7 +141,7 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'meshlibs',
+        'meshDicom',
         extension_sources,
         include_dirs=[
             # Path to pybind11 headers
@@ -196,6 +207,21 @@ class BuildExt(build_ext):
         c_opts['unix'] += darwin_opts
         l_opts['unix'] += darwin_opts
 
+    def run(self):
+        super().run()
+
+        self.move_pyd_file()
+
+    def move_pyd_file(self):
+        ext_name = self.get_ext_filename(self.extensions[0].name)  # .pyd 파일 이름
+        # 빌드된 .pyd 파일의 전체 경로
+        build_lib = self.build_lib  # 빌드된 확장 모듈이 있는 디렉토리
+        built_pyd_path = os.path.join(build_lib, ext_name)
+        target_pyd_path = os.path.join(build_lib, 'meshlibs')
+        self.copy_file(built_pyd_path, target_pyd_path)  # 파일을 이동
+        os.remove(built_pyd_path)
+
+
     def build_extensions(self):
         ct = self.compiler.compiler_type
         opts = self.c_opts.get(ct, [])
@@ -210,6 +236,16 @@ class BuildExt(build_ext):
         for ext in self.extensions:
             ext.extra_compile_args = opts
             ext.extra_link_args = link_opts
+
+        build_lib = self.build_lib  # 빌드된 확장 모듈이 있는 디렉토리
+        print('build_lib:', build_lib)
+        print('build_lib:', all_dlls)
+        dest_path = os.path.join(build_lib, 'meshlibs') #, os.path.basename(dll))
+        os.makedirs(dest_path, exist_ok=True)
+        for dll in all_dlls:
+            print(f"Copying {dll} to {dest_path}")
+            self.copy_file(dll, dest_path)
+
         build_ext.build_extensions(self)
 
 
@@ -217,7 +253,7 @@ setup(
     name='meshlibs',
     version=__version__,
     author='jooyongLee',
-    author_email='yong86@dio.co.kr',
+    author_email='jooyong.lee@medit.com',
     url='',
     description='meshlibs python userdefined project using pybind11',
     long_description='',
@@ -225,22 +261,26 @@ setup(
     install_requires=['pybind11>=2.3'],
     setup_requires=['pybind11>=2.3'],
     cmdclass={'build_ext': BuildExt},
+    # packages=['meshlibs']
+    packages=['meshlibs'],
     zip_safe=False,
 )
 
-# to_copy_dlls = [os.path.join(meshlibs_path, 'dll', fname + '.dll') for fname in ext_dep_meshlibs]
-for p in to_copy_dlls:
-    assert os.path.exists(p), 'cannot find dependency dll:{}'.format(p)
+# # to_copy_dlls = [os.path.join(meshlibs_path, 'dll', fname + '.dll') for fname in ext_dep_meshlibs]
+# for p in to_copy_dlls:
+#     assert os.path.exists(p), 'cannot find dependency dll:{}'.format(p)
 
-# all_dll_copys = meshlibs_dlls
-print('==============dependency dll copy...==============')
-to_save_dirs_dll = os.path.join(file_path, 'dlls')
-os.makedirs(to_save_dirs_dll, exist_ok=True)
+# # all_dll_copys = meshlibs_dlls
+# print('==============dependency dll copy...==============')
+# to_save_dirs_dll = os.path.join(file_path, 'dlls')
+# os.makedirs(to_save_dirs_dll, exist_ok=True)
 
-for src_file in to_copy_dlls:
-    fname = os.path.basename(src_file)
-    tar_file = os.path.join(to_save_dirs_dll, fname)
-    shutil.copy(src_file, tar_file)
-    print('{}-->{}'.format(src_file, tar_file))
-print('==============complete==============')
+# for src_file in to_copy_dlls:
+#     fname = os.path.basename(src_file)
+#     tar_file = os.path.join(to_save_dirs_dll, fname)
+#     shutil.copy(src_file, tar_file)
+#     print('{}-->{}'.format(src_file, tar_file))
+# print('==============complete==============')
+
+
 

@@ -36,9 +36,6 @@
     <ClInclude Include="mfccommon.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>source</Filter>
     </ClInclude>
@@ -75,9 +72,6 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="DICOMReader.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="VolumeDicomReader.cpp">
